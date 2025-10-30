@@ -1,0 +1,7 @@
+services:
+  web:
+    extra_hosts:
+      - "task.planelocal:172.18.0.4"
+      - "admin.task.planelocal:172.18.0.4"
+      - "space.task.planelocal:172.18.0.4"
+      - "live.task.planelocal:172.18.0.4"

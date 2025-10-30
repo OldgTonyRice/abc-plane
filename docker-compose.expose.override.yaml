@@ -1,0 +1,12 @@
+services:
+  plane-caddy:
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - plane_default
+    restart: unless-stopped
+
+networks:
+  plane_default:
+    external: true
+    name: plane_default

@@ -1,0 +1,18 @@
+services:
+  api:
+    entrypoint: []        # bỏ entrypoint gốc (tránh gọi Celery/register_instance)
+    command: >
+      sh -lc "
+        set -e
+        cd /code
+        python manage.py migrate
+        exec python -m uvicorn plane.asgi:application --host 0.0.0.0 --port 8000
+      "
+    networks:
+      - plane_default
+    restart: unless-stopped
+
+networks:
+  plane_default:
+    external: true
+    name: plane_default

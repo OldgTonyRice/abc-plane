@@ -1,0 +1,13 @@
+services:
+  api:
+    environment:
+      CELERY_BROKER_URL: amqp://plane:plane@plane-mq:5672//
+      BROKER_URL:        amqp://plane:plane@plane-mq:5672//
+  worker:
+    environment:
+      CELERY_BROKER_URL: amqp://plane:plane@plane-mq:5672//
+      BROKER_URL:        amqp://plane:plane@plane-mq:5672//
+  beat-worker:
+    environment:
+      CELERY_BROKER_URL: amqp://plane:plane@plane-mq:5672//
+      BROKER_URL:        amqp://plane:plane@plane-mq:5672//

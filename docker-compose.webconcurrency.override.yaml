@@ -1,0 +1,13 @@
+services:
+  api:
+    environment:
+      WEB_CONCURRENCY: "2"     # hoặc GUNICORN_WORKERS: "2" nếu script dùng biến này
+      GUNICORN_WORKERS: "2"
+      PORT: "8000"
+      BIND: "0.0.0.0:8000"
+  admin:
+    environment:
+      WEB_CONCURRENCY: "2"
+  web:
+    environment:
+      WEB_CONCURRENCY: "2"

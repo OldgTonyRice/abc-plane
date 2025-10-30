@@ -1,0 +1,34 @@
+services:
+  api:
+    ports: ["8000:8000"]
+    environment:
+      APP_PROTOCOL: http
+      APP_DOMAIN: task.planelocal
+      WEB_URL: http://task.planelocal
+      ALLOWED_HOSTS: task.planelocal,space.task.planelocal,localhost,127.0.0.1
+      CORS_ALLOWED_ORIGINS: http://task.planelocal,http://space.task.planelocal
+      CSRF_TRUSTED_ORIGINS: http://task.planelocal,http://space.task.planelocal
+      SESSION_COOKIE_DOMAIN: .task.planelocal
+      CSRF_COOKIE_DOMAIN: .task.planelocal
+      SESSION_COOKIE_SECURE: "False"
+      CSRF_COOKIE_SECURE: "False"
+      SESSION_COOKIE_SAMESITE: Lax
+      CSRF_COOKIE_SAMESITE: Lax
+      CSRF_COOKIE_HTTPONLY: "False"
+      ENABLE_SIGNUP: "1"
+      ENABLE_EMAIL_PASSWORD: "1"
+  web:
+    ports: ["3000:3000"]
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://task.planelocal/api
+      APP_PROTOCOL: http
+      APP_DOMAIN: task.planelocal
+      WEB_URL: http://task.planelocal
+      ALLOWED_HOSTS: task.planelocal,localhost,127.0.0.1
+  space:
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: /api
+      APP_PROTOCOL: http
+      APP_DOMAIN: space.task.planelocal
+      WEB_URL: http://space.task.planelocal
+      ALLOWED_HOSTS: space.task.planelocal,localhost,127.0.0.1

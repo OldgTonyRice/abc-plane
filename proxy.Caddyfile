@@ -1,0 +1,59 @@
+{
+  auto_https off
+}
+
+task.planelocal:80 {
+  route {
+    @api path /api/* /socket.io/*
+    handle @api {
+      reverse_proxy http://api:8000 {
+        header_up Host task.planelocal
+        header_up X-Forwarded-Host task.planelocal
+        header_up X-Forwarded-Proto http
+      }
+    }
+    handle {
+      reverse_proxy web:3000
+    }
+  }
+}
+
+admin.task.planelocal:80 {
+  route {
+    @api path /api/* /socket.io/*
+    handle @api {
+      reverse_proxy http://api:8000 {
+        header_up Host task.planelocal
+        header_up X-Forwarded-Host admin.task.planelocal
+        header_up X-Forwarded-Proto http
+      }
+    }
+    handle_path /god-mode* {
+      uri strip_prefix /god-mode
+      reverse_proxy admin:3000
+    }
+    redir / /god-mode 308
+  }
+}
+
+space.task.planelocal:80 {
+  route {
+    @api path /api/* /socket.io/*
+    handle @api {
+      reverse_proxy http://api:8000 {
+        header_up Host task.planelocal
+        header_up X-Forwarded-Host space.task.planelocal
+        header_up X-Forwarded-Proto http
+      }
+    }
+    handle_path /spaces* {
+      uri strip_prefix /spaces
+      reverse_proxy space:3000
+    }
+    redir / /spaces 308
+  }
+}
+
+live.task.planelocal:80 {
+  reverse_proxy plane-live:3000
+}

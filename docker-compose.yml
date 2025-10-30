@@ -45,6 +45,12 @@ services:
     command: ./bin/docker-entrypoint-api.sh
     env_file:
       - ./apps/api/.env
+    environment:
+      ADMIN_BASE_URL:  "http://admin.task.planelocal"
+      SPACE_BASE_URL:  "http://space.task.planelocal"
+      APP_BASE_URL:    "http://task.planelocal"
+      CORS_ALLOWED_ORIGINS: "http://task.planelocal,http://admin.task.planelocal,http://space.task.planelocal"
+      NEXT_PUBLIC_API_BASE_URL: "http://task.planelocal"
     depends_on:
       - plane-db
       - plane-redis

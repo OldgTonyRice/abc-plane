@@ -1,0 +1,11 @@
+services:
+  proxy:
+    ports:
+      - "127.0.0.1:18080:80"
+    networks: [plane_default]
+    restart: unless-stopped
+
+networks:
+  plane_default:
+    external: true
+    name: plane_default

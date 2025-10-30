@@ -1,0 +1,9 @@
+services:
+  web:
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: "https://task.abcvip.site/api"
+      NEXT_PUBLIC_WEB_BASE_URL: "https://task.abcvip.site"
+      NEXT_PUBLIC_ADMIN_BASE_URL: "https://task.abcvip.site/god-mode"
+      NEXT_PUBLIC_LIVE_BASE_URL: "https://task.abcvip.site/live"
+      NEXT_PUBLIC_SPACE_BASE_URL: "https://task.abcvip.site/spaces"
+      WEB_URL: "https://task.abcvip.site"

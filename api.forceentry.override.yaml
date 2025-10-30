@@ -1,0 +1,18 @@
+services:
+  api:
+    # XÓA hẳn command gốc của image
+    command: []
+    # ÉP entrypoint chạy Uvicorn/Gunicorn thuần, bỏ Celery
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |
+        set -e
+        cd /code
+        python manage.py migrate
+        : ${GUNICORN_WORKERS:=2}
+        exec gunicorn -k uvicorn.workers.UvicornWorker plane.asgi:application \
+             --bind 0.0.0.0:8000 \
+             --workers "$GUNICORN_WORKERS" \
+             --timeout 120
+    restart: unless-stopped

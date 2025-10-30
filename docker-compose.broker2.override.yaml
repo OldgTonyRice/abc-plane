@@ -1,0 +1,9 @@
+services:
+  migrator:
+    environment:
+      CELERY_BROKER_URL: amqp://plane:plane@plane-mq:5672//
+      CELERY_RESULT_BACKEND: rpc://
+  live:
+    environment:
+      # thường không cần AMQP, nhưng thêm vào để loại trừ
+      CELERY_BROKER_URL: amqp://plane:plane@plane-mq:5672//

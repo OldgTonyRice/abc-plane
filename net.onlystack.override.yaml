@@ -1,0 +1,8 @@
+networks:
+  plane_stack:
+    driver: bridge
+services:
+  api:
+    networks: [plane_stack]
+  proxy:
+    networks: [plane_stack]

@@ -1,0 +1,17 @@
+services:
+  login-adapter:
+    build: ./login-adapter
+    image: plane-login-adapter:local
+    environment:
+      PLANE_API_BASE: http://api:8000
+      ALLOW_ORIGIN: http://148.113.10.170:8080
+    networks:
+      - default
+
+  proxy:
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      login-adapter:
+        condition: service_started
+        required: true

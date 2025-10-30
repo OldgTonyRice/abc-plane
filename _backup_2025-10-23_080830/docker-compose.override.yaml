@@ -1,0 +1,49 @@
+services:
+  web:
+    ports: ["127.0.0.1:3000:3000"]
+    env_file: [ ./plane.env ]
+    environment:
+      APP_PROTOCOL: "https"
+      WEB_URL: "https://task.abcvip.site"
+      CORS_ALLOWED_ORIGINS: "https://task.abcvip.site,https://148.113.10.170"
+      CSRF_TRUSTED_ORIGINS: "https://task.abcvip.site,https://148.113.10.170"
+      ALLOWED_HOSTS: "task.abcvip.site,148.113.10.170,localhost,127.0.0.1"
+
+  api:
+    ports: ["127.0.0.1:8000:8000"]
+    env_file: [ ./plane.env ]
+    environment:
+      APP_PROTOCOL: "https"
+      WEB_URL: "https://task.abcvip.site"
+      CORS_ALLOWED_ORIGINS: "https://task.abcvip.site,https://148.113.10.170"
+      CSRF_TRUSTED_ORIGINS: "https://task.abcvip.site,https://148.113.10.170"
+      ALLOWED_HOSTS: "task.abcvip.site,148.113.10.170,api,localhost,127.0.0.1"
+      ENABLE_EMAIL_PASSWORD: "1"
+      ENABLE_SIGNUP: "1"
+      ENABLE_MAGIC_LINK_LOGIN: "0"
+
+  beat-worker:
+    env_file: [ ./plane.env ]
+    environment:
+      WEB_URL: "https://task.abcvip.site"
+      CORS_ALLOWED_ORIGINS: "https://task.abcvip.site,https://148.113.10.170"
+
+  migrator:
+    env_file: [ ./plane.env ]
+    environment:
+      WEB_URL: "https://task.abcvip.site"
+      CORS_ALLOWED_ORIGINS: "https://task.abcvip.site,https://148.113.10.170"
+
+  # Không cần login-adapter nữa; nếu vẫn muốn giữ lại thì cập nhật ORIGIN đúng domain.
+  # login-adapter:
+  #   image: plane-login-adapter:local
+  #   ports: ["8081:8081"]
+  #   environment:
+  #     ALLOW_ORIGIN: "https://task.abcvip.site"
+  #     PLANE_API_BASE: "http://api:8000"
+
+  live:
+    ports: ["127.0.0.1:3003:3000"]
+
+  plane-minio:
+    ports: ["127.0.0.1:9000:9000"]

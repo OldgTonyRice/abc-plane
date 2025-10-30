@@ -1,0 +1,6 @@
+services:
+  plane-mq:
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: "plane"
+      RABBITMQ_DEFAULT_PASS: "plane"

@@ -1,0 +1,8 @@
+services:
+  api:
+    entrypoint: [] 
+    command: sh -lc 'set -e; cd /code; python manage.py migrate; exec gunicorn plane.wsgi:application --chdir /code --bind=0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-2} --timeout 120'
+    environment:
+      DJANGO_SETTINGS_MODULE: plane.settings.production
+      PYTHONPATH: /code/apps/api
+      PORT: "8000"

@@ -1,0 +1,51 @@
+task.planelocal:80 {
+    encode gzip
+
+    # REST API
+    handle /api/* {
+        reverse_proxy http://api:8000
+    }
+
+    # AUTH của backend (QUAN TRỌNG): proxy vào API
+    handle /auth/* {
+        reverse_proxy http://api:8000
+    }
+
+    # Còn lại -> web (landing)
+    handle {
+        reverse_proxy http://web:3000
+    }
+}
+
+space.task.planelocal:80 {
+    encode gzip
+
+    # REST API cùng origin (cookie/CSRF ổn định)
+    handle /api/* {
+        reverse_proxy http://api:8000
+    }
+
+    # AUTH backend
+    handle /auth/* {
+        reverse_proxy http://api:8000
+    }
+
+    # Còn lại -> app SPACE (Next.js)
+    handle {
+        reverse_proxy http://space:3000
+    }
+}
+
+admin.task.planelocal:80 {
+    encode gzip
+    handle {
+        reverse_proxy http://admin:3000
+    }
+}
+
+live.task.planelocal:80 {
+    encode gzip
+    handle {
+        reverse_proxy http://live:3000
+    }
+}

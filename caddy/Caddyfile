@@ -1,0 +1,25 @@
+:8080 {
+	handle_path /auth/spaces/sign-in/* {
+		reverse_proxy login-adapter:8081
+	}
+
+	handle_path /api/* {
+		reverse_proxy api:8000
+	}
+
+	handle_path /auth/* {
+		reverse_proxy api:8000
+	}
+
+	handle_path /spaces/* {
+		reverse_proxy space:3000
+	}
+
+	handle_path /admin/* {
+		reverse_proxy admin:3000
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

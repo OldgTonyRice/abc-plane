@@ -1,0 +1,12 @@
+services:
+  web:
+    environment:
+      NEXT_PUBLIC_API_BASE_URL:   http://task.planelocal:18080
+      NEXT_PUBLIC_WEB_BASE_URL:   http://task.planelocal:18080
+      NEXT_PUBLIC_ADMIN_BASE_URL: http://admin.task.planelocal:18080
+      NEXT_PUBLIC_ADMIN_BASE_PATH: /god-mode
+      NEXT_PUBLIC_SPACE_BASE_URL: http://space.task.planelocal:18080
+      NEXT_PUBLIC_SPACE_BASE_PATH: /spaces
+      NEXT_PUBLIC_LIVE_BASE_URL:  http://live.task.planelocal:18080
+      NEXT_PUBLIC_LIVE_BASE_PATH: /live
+      NEXT_TELEMETRY_DISABLED: "1"

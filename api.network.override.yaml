@@ -1,0 +1,10 @@
+services:
+  api:
+    networks:
+      - plane_default
+    restart: unless-stopped
+
+networks:
+  plane_default:
+    external: true
+    name: plane_default

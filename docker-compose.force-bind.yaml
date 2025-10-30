@@ -1,0 +1,17 @@
+services:
+  api:
+    entrypoint: []   # bypass entrypoint gốc
+    command:
+      - sh
+      - -lc
+      - |
+        set -e
+        : $${GUNICORN_WORKERS:=2}
+        cd /code
+        python manage.py migrate
+        exec gunicorn -k uvicorn.workers.UvicornWorker plane.asgi:application \
+             --bind 0.0.0.0:8000 \
+             --workers "$$GUNICORN_WORKERS" \
+             --timeout 120
+    environment:
+      DJANGO_SETTINGS_MODULE: plane.settings.production

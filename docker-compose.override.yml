@@ -1,0 +1,124 @@
+# docker-compose.override.yml
+services:
+  plane-db:
+    networks: [default, plane_net]
+
+  plane-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server","--appendonly","yes"]
+    volumes: [ "redisdata:/data" ]
+    networks: [default, plane_net]
+
+  plane-mq:
+    networks: [default, plane_net]
+
+  plane-minio:
+    networks: [default, plane_net]
+
+  api:
+    image: ghcr.io/makeplane/plane-api:latest
+    command:
+      - sh
+      - -lc
+      - >
+        python manage.py migrate --noinput &&
+        gunicorn plane.asgi:application
+        -k uvicorn.workers.UvicornWorker
+        -b 0.0.0.0:8000
+        --workers 3
+        --timeout 120
+    environment:
+      ADMIN_BASE_URL: http://admin.task.planelocal:18080
+      SPACE_BASE_URL:  http://space.task.planelocal:18080
+      APP_BASE_URL:    http://task.planelocal:18080
+      APP_PROTOCOL: http
+      APP_DOMAIN: task.planelocal
+
+      # CSRF/Cookies cho toàn bộ *.task.planelocal
+      COOKIE_DOMAIN: .task.planelocal
+      CSRF_COOKIE_DOMAIN: .task.planelocal
+      SESSION_COOKIE_DOMAIN: .task.planelocal
+      CSRF_COOKIE_SAMESITE: Lax
+      SESSION_COOKIE_SAMESITE: Lax
+      CSRF_COOKIE_SECURE: "False"
+      SESSION_COOKIE_SECURE: "False"
+      CSRF_COOKIE_HTTPONLY: "False"
+
+      # CORS/Host
+      CORS_ALLOW_CREDENTIALS: "True"
+      CORS_ALLOWED_ORIGINS:  http://task.planelocal:18080,http://admin.task.planelocal:18080,http://space.task.planelocal:18080
+      CSRF_TRUSTED_ORIGINS:  http://task.planelocal:18080,http://admin.task.planelocal:18080,http://space.task.planelocal:18080
+      ALLOWED_HOSTS: "task.planelocal,admin.task.planelocal,space.task.planelocal,localhost,127.0.0.1,api"
+
+      # DB/Redis/RabbitMQ
+      POSTGRES_HOST: plane-db
+      POSTGRES_DB: plane
+      POSTGRES_USER: plane
+      POSTGRES_PASSWORD: plane
+      REDIS_URL: redis://plane-redis:6379/0
+      CELERY_BROKER_URL: amqp://plane:plane@plane-mq:5672/plane
+      CELERY_RESULT_BACKEND: redis://plane-redis:6379/0
+      RABBITMQ_HOST: plane-mq
+
+      # MinIO (S3)
+      AWS_S3_ENDPOINT: http://plane-minio:9000
+      AWS_S3_BUCKET_NAME: uploads
+      AWS_ACCESS_KEY_ID: access-key
+      AWS_SECRET_ACCESS_KEY: secret-key
+
+      DJANGO_SETTINGS_MODULE: plane.settings.production
+      ENABLE_SIGNUP: "1"
+      SECRET_KEY: dev_secret_key_change_me
+    depends_on:
+      plane-db:     { condition: service_started }
+      plane-redis:  { condition: service_started }
+      plane-mq:     { condition: service_started }
+    networks: [plane_net]
+
+  # ---- FRONTENDS ----
+  web:
+    image: ghcr.io/makeplane/plane-web:latest
+    restart: unless-stopped
+    environment:
+      # web dùng chính host web
+      NEXT_PUBLIC_API_BASE_URL: http://task.planelocal:18080
+    networks: [plane_net]
+
+  admin:
+    image: ghcr.io/makeplane/plane-admin:latest
+    restart: unless-stopped
+    environment:
+      # ĐỔI: admin gọi API qua admin.* (same-origin)
+      NEXT_PUBLIC_API_BASE_URL: http://admin.task.planelocal:18080
+    networks: [plane_net]
+
+  space:
+    image: ghcr.io/makeplane/plane-space:latest
+    restart: unless-stopped
+    environment:
+      # ĐỔI: space gọi API qua space.* (same-origin)
+      NEXT_PUBLIC_API_BASE_URL: http://space.task.planelocal:18080
+    networks: [plane_net]
+
+  proxy:
+    image: caddy:latest
+    restart: unless-stopped
+    volumes:
+      - ./apps/proxy/Caddyfile.ce:/etc/caddy/Caddyfile:ro
+    ports:
+      - "18080:80"
+      - "18443:443"
+    environment:
+      SITE_ADDRESS: task.planelocal:18080
+      FILE_SIZE_LIMIT: "5242880"
+      BUCKET_NAME: uploads
+      CERT_EMAIL: ""
+      CERT_ACME_CA: ""
+      CERT_ACME_DNS: ""
+      TRUSTED_PROXIES: "0.0.0.0/0"
+    networks: [plane_net]
+
+networks:
+  plane_net:
+    name: plane_net
