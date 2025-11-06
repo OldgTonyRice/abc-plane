@@ -1,0 +1,44 @@
+services:
+  # --- API: bật single workspace + load guard backend ---
+  api:
+    image: ghcr.io/makeplane/plane-api:latest
+    build: null
+    environment:
+      SINGLE_WORKSPACE_MODE: "true"
+      SINGLE_WORKSPACE_NAME: "OnlyOne"
+      SINGLE_WORKSPACE_SLUG: "onlyone"
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: "/app/custom-abcvip/single_workspace_guard/backend:/app"
+
+      # cookie/CSRF/hosts cho dev multi-subdomain
+      BASE_DOMAIN: "task.planelocal"
+      APP_PROTOCOL: "http"
+      APP_PORT: "18080"
+      SUBDOMAINS: "task,space,admin"
+    volumes:
+      - ./custom-abcvip/single_workspace_guard/backend:/app/custom-abcvip/single_workspace_guard/backend:ro
+
+  # --- WEB: build kèm middleware redirect sang SPACE /spaces/<slug>/ ---
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_BASE_URL: "http://task.planelocal:18080"
+        NEXT_PUBLIC_ADMIN_BASE_URL: ""
+        NEXT_PUBLIC_ADMIN_BASE_PATH: "/god-mode"
+        NEXT_PUBLIC_LIVE_BASE_URL: ""
+        NEXT_PUBLIC_LIVE_BASE_PATH: "/live"
+        NEXT_PUBLIC_SPACE_BASE_URL: "http://space.task.planelocal:18080"
+        NEXT_PUBLIC_SPACE_BASE_PATH: "/spaces"
+        NEXT_PUBLIC_WEB_BASE_URL: ""
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: "http://task.planelocal:18080"
+      NEXT_PUBLIC_SINGLE_WORKSPACE_MODE: "true"
+      NEXT_PUBLIC_SINGLE_WORKSPACE_SLUG: "onlyone"
+      NEXT_PUBLIC_SPACE_BASE_URL: "http://space.task.planelocal:18080"
+      NEXT_PUBLIC_SPACE_BASE_PATH: "/spaces"
+
+  # --- PROXY: (không cần env ở đây, ta chỉ đọc config thật đang chạy) ---
+  proxy:
+    volumes: []
